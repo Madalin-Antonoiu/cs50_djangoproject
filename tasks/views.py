@@ -1,18 +1,23 @@
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, reverse
+from django.shortcuts import render
+from django.urls import reverse
 
-tasks = ["Do groceries", "Buy some soap", "Clean the dishes"]
+tasks = []
 
 class NewTaskForm(forms.Form):
     task = forms.CharField(label="New Task")
     # Client side FORM validation - for free!
-    priority = forms.IntegerField(label="Priority", min_value=1, max_value=10)
+    # priority = forms.IntegerField(label="Priority", min_value=1, max_value=10)
 
 def index(request):
+    if "tasks" not in request.session:
+        request.session["tasks"] = []
+
     return render(request, "tasks/index.html", {
-        "tasks": tasks
+        "tasks": request.session["tasks"]
     })
+
 def add(request):
     if request.method == "POST":
 
@@ -21,7 +26,8 @@ def add(request):
         if form.is_valid():
             # The valid, clean data is found in this form.cleaned_data var
             task = form.cleaned_data["task"]
-            tasks.append(task)
+            request.session["tasks"] += [task]
+            
             return redirect("tasks:index")
         else:
             return render(request, "tasks/add.html", {
