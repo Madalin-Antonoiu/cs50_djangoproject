@@ -1,6 +1,6 @@
 from django import forms
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, reverse
 
 tasks = ["Do groceries", "Buy some soap", "Clean the dishes"]
 
@@ -22,6 +22,7 @@ def add(request):
             # The valid, clean data is found in this form.cleaned_data var
             task = form.cleaned_data["task"]
             tasks.append(task)
+            return redirect("tasks:index")
         else:
             return render(request, "tasks/add.html", {
                 "form": form
@@ -32,3 +33,8 @@ def add(request):
         return render(request, "tasks/add.html", {
             "form": NewTaskForm()
         })
+
+# Helpers
+def redirect(path_string):
+    return HttpResponseRedirect(reverse(path_string))
+
