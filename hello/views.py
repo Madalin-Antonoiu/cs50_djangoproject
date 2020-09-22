@@ -7,3 +7,6 @@ def hello(request):
 
 def mads(request):
     return HttpResponse("Hello, Mads!")
+
+def greet(request, name):
+    return HttpResponse(f"Hello, {name}")
